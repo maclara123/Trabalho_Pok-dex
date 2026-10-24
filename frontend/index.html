@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pokédex do Grupo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="#"
+        >◉ POKÉ<span>DÉX</span><small>LABORATÓRIO DE DADOS</small></a
+      ><button class="button pale" id="refresh">↻ Atualizar</button>
+    </header>
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">PROJETO DE APIs · NoSQL · HTTP</p>
+          <h1>Uma Pokédex feita<br />para <span>explorar dados.</span></h1>
+          <p>
+            Dados da PokéAPI, salvos no MongoDB e transformados em informação.
+          </p>
+          <button class="button dark" id="import">↓ Importar 30 Pokémon</button>
+          <button class="button pale" id="new">＋ Novo Pokémon</button>
+        </div>
+        <div class="orb">◉<b>151</b><small>NA PRIMEIRA GERAÇÃO</small></div>
+      </section>
+      <div id="notice" hidden></div>
+      <section class="stats">
+        <article>
+          <small>Pokémon salvos</small><strong id="total">—</strong
+          ><em>documentos na coleção</em>
+        </article>
+        <article>
+          <small>Ataque médio</small><strong id="average">—</strong
+          ><em>pontos base</em>
+        </article>
+        <article>
+          <small>Maior ataque</small><strong id="max">—</strong
+          ><em id="maxName">entre os cadastrados</em>
+        </article>
+        <article>
+          <small>Favoritos</small><strong id="favorites">—</strong
+          ><em>percentual da coleção</em>
+        </article>
+      </section>
+      <section class="panels">
+        <article class="panel">
+          <small>VISÃO GERAL</small>
+          <h2>Pokémon por tipo</h2>
+          <div class="chart"><canvas id="bars"></canvas></div>
+        </article>
+        <article class="panel">
+          <small>DISTRIBUIÇÃO</small>
+          <h2>Tipos na coleção</h2>
+          <div class="chart"><canvas id="donut"></canvas></div>
+        </article>
+        <article class="panel">
+          <small>DESTAQUES</small>
+          <h2>Top 5 de ataque</h2>
+          <ol id="ranking"></ol>
+        </article>
+      </section>
+      <section>
+        <div class="section-title">
+          <div>
+            <small>COLEÇÃO DO GRUPO</small>
+            <h2>Pokémon cadastrados <span id="count">0</span></h2>
+          </div>
+          <button class="button red" id="new2">＋ Cadastrar</button>
+        </div>
+        <div class="filters">
+          <input id="search" placeholder="Buscar por nome ou tipo..." /><label
+            >Tipo
+            <select id="type">
+              <option value="">Todos os tipos</option>
+            </select></label
+          ><label
+            >Ordenar
+            <select id="sort">
+              <option value="numero">Número</option>
+              <option value="ataque">Maior ataque</option>
+              <option value="nome">Nome A–Z</option>
+            </select></label
+          >
+        </div>
+        <div id="grid" class="grid"></div>
+      </section>
+      <footer>
+        Pokédex do Grupo <span>Origem: PokéAPI · Persistência: MongoDB</span>
+      </footer>
+    </main>
+    <dialog id="modal">
+      <form id="form">
+        <div class="dialog-head">
+          <div>
+            <small id="mode">NOVO DOCUMENTO</small>
+            <h2 id="title">Cadastrar Pokémon</h2>
+          </div>
+          <button type="button" id="close" class="x">×</button>
+        </div>
+        <input id="id" type="hidden" />
+        <div class="fields">
+          <label>Nome<input id="name" required maxlength="40" /></label
+          ><label
+            >Número da Pokédex<input
+              id="number"
+              type="number"
+              min="1"
+              required /></label
+          ><label
+            >Tipos <small>separe por vírgula</small
+            ><input id="types" required placeholder="grass, poison" /></label
+          ><label
+            >Ataque<input id="attack" type="number" min="0" required /></label
+          ><label
+            >Defesa<input id="defense" type="number" min="0" required /></label
+          ><label>HP<input id="hp" type="number" min="0" required /></label
+          ><label class="wide"
+            >URL da imagem<input id="image" type="url" /></label
+          ><label class="wide"
+            ><input id="favorite" type="checkbox" /> Marcar como favorito</label
+          >
+        </div>
+        <div class="actions">
+          <button type="button" class="button pale" id="cancel">Cancelar</button
+          ><button class="button red">Salvar Pokémon</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
