@@ -1,0 +1,11 @@
+{
+  "info":{"_postman_id":"d28ab25d-54fa-4dde-b6ec-0b9ac9b7ec87","name":"Pokédex - Semana 1 - PokéAPI + API Node","description":"Primeiras chamadas HTTP da entrega da semana 1: GET na origem, criar coleção e POST/GET no MongoDB por meio da API própria.","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "auth":{"type":"basic","basic":[{"key":"username","value":"admin","type":"string"},{"key":"password","value":"secret","type":"string"}]},
+  "variable":[{"key":"baseUrl","value":"http://localhost:8080"},{"key":"id","value":"COLE_AQUI_O_ID_RETORNADO_NO_LOCATION"}],
+  "item":[
+    {"name":"1 - Consultar PokéAPI (GET)","request":{"method":"GET","header":[],"url":"https://pokeapi.co/api/v2/pokemon?limit=3&offset=0"}},
+    {"name":"2 - Criar coleção pokemons (PUT)","request":{"method":"PUT","header":[],"url":"{{baseUrl}}/pokemons","description":"Primeira execução cria a coleção e responde 201. Execuções seguintes respondem 200."}},
+    {"name":"3 - Salvar Bulbasaur de exemplo (POST)","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nome\": \"bulbasaur\",\n  \"numero\": 1,\n  \"tipos\": [\"grass\", \"poison\"],\n  \"ataque\": 49,\n  \"defesa\": 49,\n  \"hp\": 45,\n  \"altura\": 7,\n  \"peso\": 69,\n  \"favorito\": false,\n  \"criadoEm\": \"2026-10-24T12:00:00.000Z\"\n}"},"url":"{{baseUrl}}/pokemons","description":"Esperado: 201 Created. A resposta inclui _id.$oid e o cabeçalho Location."}},
+    {"name":"4 - Listar documentos (GET)","request":{"method":"GET","header":[],"url":"{{baseUrl}}/pokemons?pagesize=100"}}
+  ]
+}
