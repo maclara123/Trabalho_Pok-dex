@@ -2,8 +2,6 @@ services:
   mongodb:
     image: mongo:7
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     volumes:
       - dados-mongo:/data/db
     healthcheck:
@@ -12,7 +10,7 @@ services:
       timeout: 3s
       retries: 10
   api:
-    build: ./api
+    build: ./backend
     restart: unless-stopped
     depends_on:
       mongodb:
@@ -25,5 +23,14 @@ services:
       BASIC_PASSWORD: secret
     ports:
       - "8080:8080"
+  frontend:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
 volumes:
   dados-mongo:

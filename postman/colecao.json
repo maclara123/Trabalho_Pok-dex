@@ -1,11 +1,78 @@
 {
-  "info":{"_postman_id":"d28ab25d-54fa-4dde-b6ec-0b9ac9b7ec87","name":"Pokédex - Semana 1 - PokéAPI + API Node","description":"Primeiras chamadas HTTP da entrega da semana 1: GET na origem, criar coleção e POST/GET no MongoDB por meio da API própria.","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
-  "auth":{"type":"basic","basic":[{"key":"username","value":"admin","type":"string"},{"key":"password","value":"secret","type":"string"}]},
-  "variable":[{"key":"baseUrl","value":"http://localhost:8080"},{"key":"id","value":"COLE_AQUI_O_ID_RETORNADO_NO_LOCATION"}],
-  "item":[
-    {"name":"1 - Consultar PokéAPI (GET)","request":{"method":"GET","header":[],"url":"https://pokeapi.co/api/v2/pokemon?limit=3&offset=0"}},
-    {"name":"2 - Criar coleção pokemons (PUT)","request":{"method":"PUT","header":[],"url":"{{baseUrl}}/pokemons","description":"Primeira execução cria a coleção e responde 201. Execuções seguintes respondem 200."}},
-    {"name":"3 - Salvar Bulbasaur de exemplo (POST)","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nome\": \"bulbasaur\",\n  \"numero\": 1,\n  \"tipos\": [\"grass\", \"poison\"],\n  \"ataque\": 49,\n  \"defesa\": 49,\n  \"hp\": 45,\n  \"altura\": 7,\n  \"peso\": 69,\n  \"favorito\": false,\n  \"criadoEm\": \"2026-10-24T12:00:00.000Z\"\n}"},"url":"{{baseUrl}}/pokemons","description":"Esperado: 201 Created. A resposta inclui _id.$oid e o cabeçalho Location."}},
-    {"name":"4 - Listar documentos (GET)","request":{"method":"GET","header":[],"url":"{{baseUrl}}/pokemons?pagesize=100"}}
+  "info": {
+    "_postman_id": "d28ab25d-54fa-4dde-b6ec-0b9ac9b7ec87",
+    "name": "Pokédex - entrega final - PokéAPI + MongoDB + Express",
+    "description": "Fluxo de demonstração: GET na PokéAPI, PUT para preparar coleção, POST e GET, PUT, PATCH e DELETE na API Node/Express ligada ao MongoDB. Rode a sequência de cima para baixo; DELETE deve ser o último.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "admin", "type": "string" },
+      { "key": "password", "value": "secret", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1 - GET PokéAPI (origem)",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "url": "https://pokeapi.co/api/v2/pokemon?limit=3&offset=0",
+        "description": "Consulta a API de origem. Esperado: 200 OK. Não grava na PokéAPI."
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('GET na PokéAPI retorna 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "2 - PUT criar/confirmar coleção",
+      "request": { "method": "PUT", "url": "{{baseUrl}}/pokemons", "description": "Primeira execução: 201 Created. Execuções posteriores: 200 OK, pois a coleção já existe." },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Coleção criada ou existente', () => pm.expect([200, 201]).to.include(pm.response.code));"] } }]
+    },
+    {
+      "name": "3 - POST cadastrar Pokémon para teste",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nome\": \"pokemon-teste-http\",\n  \"numero\": 9999,\n  \"tipos\": [\"grass\", \"poison\"],\n  \"ataque\": 49,\n  \"defesa\": 49,\n  \"hp\": 45,\n  \"altura\": 7,\n  \"peso\": 69,\n  \"imagem\": \"\",\n  \"favorito\": false,\n  \"criadoEm\": \"2026-11-08T12:00:00.000Z\"\n}" },
+        "url": "{{baseUrl}}/pokemons",
+        "description": "Esperado: 201 Created e Location. Salva o ID automaticamente na variável id. Apague este registro no final com DELETE."
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('POST retorna 201', () => pm.response.to.have.status(201));", "const body = pm.response.json();", "const location = pm.response.headers.get('Location');", "const id = body._id?.$oid || body._id || location?.split('/').pop();", "pm.expect(id, 'ID gerado').to.be.ok;", "pm.collectionVariables.set('id', String(id));"] } }]
+    },
+    {
+      "name": "4 - GET listar documentos",
+      "request": { "method": "GET", "url": "{{baseUrl}}/pokemons?pagesize=100", "description": "Esperado: 200 OK e uma lista de documentos." },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('GET lista retorna 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "5 - GET buscar por ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/pokemons/{{id}}", "description": "Esperado: 200 OK. Rode o POST antes para preencher id." },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('GET por ID retorna 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "6 - PUT substituir documento inteiro",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nome\": \"pokemon-teste-http\",\n  \"numero\": 9999,\n  \"tipos\": [\"fire\"],\n  \"ataque\": 60,\n  \"defesa\": 50,\n  \"hp\": 55,\n  \"altura\": 8,\n  \"peso\": 70,\n  \"imagem\": \"\",\n  \"favorito\": false\n}" },
+        "url": "{{baseUrl}}/pokemons/{{id}}",
+        "description": "Esperado: 200 OK. Substitui o documento completo."
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('PUT retorna 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "7 - PATCH alterar somente favorito",
+      "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"favorito\": true\n}" }, "url": "{{baseUrl}}/pokemons/{{id}}", "description": "Esperado: 200 OK. Altera só o campo favorito enviado." },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('PATCH retorna 200', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "8 - DELETE excluir documento de teste",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/pokemons/{{id}}", "description": "Esperado: 204 No Content. Rode por último; apaga o documento criado no POST." },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('DELETE retorna 204', () => pm.response.to.have.status(204));"] } }]
+    }
   ]
 }
