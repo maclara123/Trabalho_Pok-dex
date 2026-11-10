@@ -32,5 +32,12 @@ services:
       - "3000:80"
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    command: tunnel --no-autoupdate --url http://frontend:80
 volumes:
   dados-mongo:

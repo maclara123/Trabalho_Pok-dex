@@ -1,4 +1,4 @@
-const DB = "http://localhost:8080/pokemons",
+const DB = "/pokemons",
   API = "https://pokeapi.co/api/v2/pokemon";
 const H = {
   "Content-Type": "application/json",

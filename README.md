@@ -50,6 +50,17 @@ docker compose down     # parar sem apagar os dados
 docker compose down -v  # apagar também os dados persistidos
 ```
 
+## Acesso pelo celular (Cloudflare Tunnel)
+
+O `docker compose` também sobe um serviço `tunnel` (cloudflared) que cria um link público `https://...trycloudflare.com` apontando para a interface. O nginx do frontend repassa `/pokemons` para a API, então a página e a API funcionam pelo mesmo link, no PC ou no celular.
+
+```powershell
+docker compose up -d --build
+docker compose logs tunnel
+```
+
+Procure nos logs a linha com `https://<algo>.trycloudflare.com` e abra esse endereço no celular. O link só funciona enquanto os containers estiverem rodando e muda a cada reinício do serviço `tunnel`.
+
 ## API HTTP
 
 As rotas da API própria usam autenticação Basic de demonstração (`admin` / `secret`) e JSON. A senha é aceita pelo enunciado para uso local.
@@ -82,4 +93,4 @@ Importe `postman/colecao.json`. Configure a variável `baseUrl` como `http://loc
 
 ## Uso de IA
 
-O grupo utilizou o ChatGPT para auxiliar na implementação e revisão de trechos do backend, Docker Compose, documentação e coleção Postman. Os integrantes devem revisar e conseguir explicar o código e adaptar esta declaração caso outras ferramentas também tenham sido usadas.
+O grupo utilizou o ChatGPT e o Claude para auxiliar na implementação e revisão de trechos do backend, Docker Compose, documentação e coleção Postman. Os integrantes devem revisar e conseguir explicar o código e adaptar esta declaração caso outras ferramentas também tenham sido usadas.
